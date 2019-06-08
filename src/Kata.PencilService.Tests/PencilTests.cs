@@ -7,6 +7,8 @@ namespace Kata.PencilService.Tests
     {
         private const string TestText1 = "TestText1";
         private const string TestText2 = "TestText2";
+        private const string TenPointString = "abcdefghij";
+        private const string FivePointString = "abcde";
 
         [Fact]
         public void CanCreateAPencil()
@@ -80,6 +82,48 @@ namespace Kata.PencilService.Tests
             pencil.Write(text, ref paper);
 
             Assert.Equal(result, paper.Content);
+        }
+
+        [Fact]
+        public void WhenSharpeningTheDurabilityIsReset()
+        {
+            var initialDurability = 10;
+
+            var pencil = new Pencil(initialDurability);
+            var paper = new Paper();
+
+            pencil.Write(FivePointString, ref paper);
+            pencil.Sharpen();
+
+            Assert.Equal(initialDurability, pencil.Durability);
+        }
+
+        [Fact]
+        public void WhenSharpeningTheLengthIsReduced()
+        {
+            var length = 5;
+
+            var pencil = new Pencil(10, length);
+            var paper = new Paper();
+
+            pencil.Write(TenPointString, ref paper);
+            pencil.Sharpen();
+
+            Assert.Equal(length-1, pencil.Length);
+        }
+
+        [Fact]
+        public void WhenSharpeningTheTotalDurabilityStopsSharpeningWhenExhausted()
+        {
+            var length = 0;
+
+            var pencil = new Pencil(10, length);
+            var paper = new Paper();
+
+            pencil.Write(TenPointString, ref paper);
+            pencil.Sharpen();
+
+            Assert.Equal(0, pencil.Durability);
         }
 
     }

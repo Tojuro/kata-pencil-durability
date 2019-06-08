@@ -5,19 +5,32 @@ namespace Kata.PencilService
 {
     public class Pencil
     {
+        public int InitialDurability { get; private set; }
         public int Durability {get; private set;}
+        public int Length { get; private set; }
 
         private const string NonBreakSpace = "&nbsp;";
 
-        public Pencil (int durability = 1000)
+        public Pencil (int durability = 1000, int length = 5)
         {
+            InitialDurability = durability > 0 ? durability : 1000; 
             Durability = durability;
+            Length = length;
         }
 
         public void Write (string text, ref Paper paper)
         {
             var displayText = ApplyTextDegradation(text);
             paper.Content = string.Concat(paper.Content, displayText);
+        }
+
+        public void Sharpen()
+        {
+            if (Length > 0)
+            {
+                Length -= 1;
+                Durability = InitialDurability;
+            }
         }
 
         private string ApplyTextDegradation(string text)
@@ -43,6 +56,5 @@ namespace Kata.PencilService
 
             return canWrite && !isSpace ? chr.ToString() : NonBreakSpace;
         }
-
     }
 }
