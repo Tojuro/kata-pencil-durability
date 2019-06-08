@@ -9,6 +9,7 @@ namespace Kata.PencilService.Tests
         private const string TestText2 = "TestText2";
         private const string TenPointString = "abcdefghij";
         private const string FivePointString = "abcde";
+        private const string ErasingTestText = "How much wood would a woodchuck chuck if a woodchuck could chuck wood?";
 
         [Fact]
         public void CanCreateAPencil()
@@ -25,6 +26,14 @@ namespace Kata.PencilService.Tests
             var pencil = new Pencil(100);
 
             Assert.Equal(100, pencil.Durability);
+        }
+
+        [Fact]
+        public void CanCreatePencilAndSetLength()
+        {
+            var pencil = new Pencil(100, 5);
+
+            Assert.Equal(5, pencil.Length);
         }
 
         [Theory, 
@@ -65,14 +74,14 @@ namespace Kata.PencilService.Tests
             InlineData("O", "O"),
             InlineData("abcdef", "abcdef"),
             InlineData("abcdefghij", "abcdefghij"),
-            InlineData("abcdefghijklmno", "abcdefghij&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+            InlineData("abcdefghijklmno", "abcdefghij     "),
             InlineData("ABCDE", "ABCDE"),
-            InlineData("ABCDEFGHIJ", "ABCDE&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
-            InlineData("AAAAaaaa", "AAAAaa&nbsp;&nbsp;"),
-            InlineData("aaaaAAAA", "aaaaAAA&nbsp;"),
-            InlineData("a test", "a&nbsp;test"),
-            InlineData("i am ok", "i&nbsp;am&nbsp;ok"),
-            InlineData("a a a   ", "a&nbsp;a&nbsp;a&nbsp;&nbsp;&nbsp;"),]
+            InlineData("ABCDEFGHIJ", "ABCDE     "),
+            InlineData("AAAAaaaa", "AAAAaa  "),
+            InlineData("aaaaAAAA", "aaaaAAA "),
+            InlineData("a test", "a test"),
+            InlineData("i am ok", "i am ok"),
+            InlineData("a a a   ", "a a a   "),]
         public void WhenWritingToPaperOnlyBlankSpacesAreShownIfDurabilityIsLessOrEqualZero(string text, string result)
         {
             var durabilityStart = 10;
@@ -88,7 +97,6 @@ namespace Kata.PencilService.Tests
         public void WhenSharpeningTheDurabilityIsReset()
         {
             var initialDurability = 10;
-
             var pencil = new Pencil(initialDurability);
             var paper = new Paper();
 
@@ -102,7 +110,6 @@ namespace Kata.PencilService.Tests
         public void WhenSharpeningTheLengthIsReduced()
         {
             var length = 5;
-
             var pencil = new Pencil(10, length);
             var paper = new Paper();
 
@@ -116,7 +123,6 @@ namespace Kata.PencilService.Tests
         public void WhenSharpeningTheTotalDurabilityStopsSharpeningWhenExhausted()
         {
             var length = 0;
-
             var pencil = new Pencil(10, length);
             var paper = new Paper();
 
@@ -124,6 +130,67 @@ namespace Kata.PencilService.Tests
             pencil.Sharpen();
 
             Assert.Equal(0, pencil.Durability);
+        }
+
+        [Fact]
+        public void WhenErasingTheLastWordIsRemoved()
+        {
+            var pencil = new Pencil();
+            var paper = new Paper();
+
+            pencil.Write(ErasingTestText, ref paper);
+            pencil.Erase("chuck", ref paper);
+
+            Assert.Equal(paper.Content, "How much wood would a woodchuck chuck if a woodchuck could       wood?");
+        }
+
+        [Fact]
+        public void WhenErasingTwiceTheLastTwoWordsAreRemoved()
+        {
+            var pencil = new Pencil();
+            var paper = new Paper();
+
+            pencil.Write(ErasingTestText, ref paper);
+            pencil.Erase("chuck", ref paper);
+            pencil.Erase("chuck", ref paper);
+
+            Assert.Equal(paper.Content, "How much wood would a woodchuck chuck if a wood      could       wood?");
+        }
+
+        [Fact]
+        public void WhenErasingTheTextMightBeFirstWord()
+        {
+            var pencil = new Pencil();
+            var paper = new Paper();
+
+            pencil.Write(ErasingTestText, ref paper);
+            pencil.Erase("How", ref paper);
+
+            Assert.Equal(paper.Content, "    much wood would a woodchuck chuck if a woodchuck could chuck wood?");
+        }
+
+        [Fact]
+        public void WhenErasingTheTextMightBeLastCharacter()
+        {
+            var pencil = new Pencil();
+            var paper = new Paper();
+
+            pencil.Write(ErasingTestText, ref paper);
+            pencil.Erase("?", ref paper);
+
+            Assert.Equal(paper.Content, "How much wood would a woodchuck chuck if a woodchuck could chuck wood ");
+        }
+
+        [Fact]
+        public void WhenErasingTheTextMightNotBeThere()
+        {
+            var pencil = new Pencil();
+            var paper = new Paper();
+
+            pencil.Write(ErasingTestText, ref paper);
+            pencil.Erase("buck", ref paper);
+
+            Assert.Equal(paper.Content, ErasingTestText);
         }
 
     }

@@ -9,7 +9,7 @@ namespace Kata.PencilService
         public int Durability {get; private set;}
         public int Length { get; private set; }
 
-        private const string NonBreakSpace = "&nbsp;";
+        private const string NonBreakSpace = " ";
 
         public Pencil (int durability = 1000, int length = 5)
         {
@@ -24,6 +24,21 @@ namespace Kata.PencilService
             paper.Content = string.Concat(paper.Content, displayText);
         }
 
+        public void Erase(string text, ref Paper paper)
+        {
+            var idx = paper.Content.LastIndexOf(text);
+
+            if (idx >= 0)
+            {
+                var newText = Spacify(text);
+
+                var preString = paper.Content.Substring(0, idx);
+                var postString = paper.Content.Substring(idx + newText.Length);
+
+                paper.Content = string.Concat(preString, newText, postString);
+            }
+        }
+
         public void Sharpen()
         {
             if (Length > 0)
@@ -31,6 +46,19 @@ namespace Kata.PencilService
                 Length -= 1;
                 Durability = InitialDurability;
             }
+        }
+
+        private string Spacify(string text)
+        {
+            var len = text.Length;
+            var ret = new StringBuilder();
+
+            //TODO: I know there is a better way to do this, but I have no internets right now
+            for (int i = 0; i < len; i++)
+            {
+                ret.Append(" ");
+            }
+            return ret.ToString();
         }
 
         private string ApplyTextDegradation(string text)
