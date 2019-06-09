@@ -12,6 +12,8 @@ namespace Kata.PencilService
         public int Length { get; private set; }
         public int EraserDurability { get; private set; }
 
+        private int _lastErasedIndex { get; set; }
+
         private const string NonBreakSpace = " ";
 
         public Pencil (int durability = 1000, int length = 5, int eraserDurability = 1000)
@@ -28,12 +30,25 @@ namespace Kata.PencilService
             paper.Content = string.Concat(paper.Content, displayText);
         }
 
+        public void Rewrite(string text, ref Paper paper)
+        {
+            var displayText = ApplyWriteDegradation(text);
+
+            var newText = OverwriteText(paper.Content.Substring(_lastErasedIndex, text.Length), text);
+            var preString = paper.Content.Substring(0, _lastErasedIndex);
+            var postString = paper.Content.Substring(_lastErasedIndex + newText.Length);
+
+            paper.Content = string.Concat(preString, newText, postString);
+        }
+
         public void Erase(string text, ref Paper paper)
         {
             var idx = paper.Content.LastIndexOf(text);
 
             if (idx >= 0)
             {
+                _lastErasedIndex = idx;
+
                 var newText = ApplyEraseDegradation(idx, text);
 
                 var preString = paper.Content.Substring(0, idx);
@@ -50,6 +65,31 @@ namespace Kata.PencilService
                 Length -= 1;
                 Durability = InitialDurability;
             }
+        }
+
+        private string OverwriteText(string currentText, string replaceText)
+        {
+            var output = new StringBuilder();
+            var currentChars = currentText.ToCharArray();
+            var replaceChars = replaceText.ToCharArray();
+
+            for(int i = 0; i < currentText.Length; i++)
+            {
+                if (currentChars[i].Equals(' '))
+                {
+                    output.Append(replaceChars[i]);
+                }
+                else if (!char.IsWhiteSpace(currentChars[i]) && !char.IsWhiteSpace(replaceChars[i]))
+                {
+                    output.Append('@');
+                }
+                else
+                {
+                    output.Append(currentChars[i]);
+                }
+            }
+
+            return output.ToString();
         }
 
         private string ApplyEraseDegradation(int index, string erasedText)

@@ -248,5 +248,49 @@ namespace Kata.PencilService.Tests
             Assert.Equal("How much wood would a wo  chuck chuck if a     chuck could chuck     ?", paper.Content);
         }
 
+        [Theory,
+            InlineData("onion", "An onion a day keeps the doctor away"),
+            InlineData("dog", "An dog   a day keeps the doctor away"),
+            InlineData(" cat", "An  cat  a day keeps the doctor away"),
+            InlineData("banana", "An bananaa day keeps the doctor away"),
+            InlineData("grapefruit", "An grapef@u@@y keeps the doctor away"),]
+        public void WhenOverwritingTheValueAppearsOnThePaper(string text, string expectedResult)
+        {
+            var testString = "An apple a day keeps the doctor away";
+            
+            var pencil = new Pencil(1000, 5, 100);
+            var paper = new Paper();
+
+            pencil.Write(testString, ref paper);
+            pencil.Erase("apple", ref paper);
+            pencil.Rewrite(text, ref paper);
+
+            Assert.Equal(expectedResult, paper.Content);
+        }
+
+
+        [Theory,
+            InlineData("onion", 5),
+            InlineData("dog", 3),
+            InlineData(" cat", 3),
+            InlineData(" CAT", 6),
+            InlineData("Cat", 4),
+            InlineData("DoDoDog", 10),]
+        public void WhenOverwritingThePointDurabilityIsReduced(string text, int expectedResult)
+        {
+            var testString = "An apple a day keeps the doctor away";
+            var initialDurability = 1000;
+
+            var pencil = new Pencil(initialDurability, 5, 100);
+            var paper = new Paper();
+
+            pencil.Write(testString, ref paper);
+            pencil.Sharpen();
+            pencil.Erase("apple", ref paper);
+            pencil.Rewrite(text, ref paper);
+
+            Assert.Equal(initialDurability-expectedResult, pencil.Durability);
+        }
+
     }
 }
