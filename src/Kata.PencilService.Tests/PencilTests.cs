@@ -36,6 +36,14 @@ namespace Kata.PencilService.Tests
             Assert.Equal(5, pencil.Length);
         }
 
+        [Fact]
+        public void CanCreatePencilAndSetEraserDurability()
+        {
+            var pencil = new Pencil(100, 5, 111);
+
+            Assert.Equal(111, pencil.EraserDurability);
+        }
+
         [Theory, 
             InlineData(""),
             InlineData(TestText2),]
@@ -191,6 +199,53 @@ namespace Kata.PencilService.Tests
             pencil.Erase("buck", ref paper);
 
             Assert.Equal(paper.Content, ErasingTestText);
+        }
+
+        [Fact] 
+        public void WhenErasingTheEraserDurabilityDecreases()
+        {
+            var pencil = new Pencil(1000, 5, 100);
+            var paper = new Paper();
+
+            pencil.Write(ErasingTestText, ref paper);
+            pencil.Erase("wood", ref paper);
+
+            Assert.Equal(96, pencil.EraserDurability);
+        }
+
+        [Theory,
+            InlineData("a", "  bb ccc dddd eeeee ffffff"),
+            InlineData("bb", "a    ccc dddd eeeee ffffff"),
+            InlineData("ccc", "a bb     dddd eeeee ffffff"),
+            InlineData("dddd", "a bb ccc      eeeee ffffff"),
+            InlineData("eeeee", "a bb ccc dddd e     ffffff"),
+            InlineData("ffffff", "a bb ccc dddd eeeee ff    ")]
+        public void WhenErasingTheEraserStopsWorkingWhenCompletelyDegraded(string wordToErase, string expectedResult)
+        {
+            var testString = "a bb ccc dddd eeeee ffffff";
+
+            var pencil = new Pencil(1000, 5, 4);
+            var paper = new Paper();
+
+            pencil.Write(testString, ref paper);
+            pencil.Erase(wordToErase, ref paper);
+
+            Assert.Equal(expectedResult, paper.Content);
+        }
+
+        [Fact]
+        public void WhenErasingTheEraserStopsWorkingWhenCompletelyDegradedWithMultipleErases()
+        {
+            var pencil = new Pencil(1000, 5, 10);
+            var paper = new Paper();
+
+            pencil.Write(ErasingTestText, ref paper);
+
+            pencil.Erase("wood", ref paper);
+            pencil.Erase("wood", ref paper);
+            pencil.Erase("wood", ref paper);
+
+            Assert.Equal("How much wood would a wo  chuck chuck if a     chuck could chuck     ?", paper.Content);
         }
 
     }
