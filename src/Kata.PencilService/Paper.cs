@@ -4,6 +4,6 @@ namespace Kata.PencilService
 {
     public class Paper
     {
-        public string Content { get; set; }
+        public string Content { get; set; } = string.Empty;
     }
 }

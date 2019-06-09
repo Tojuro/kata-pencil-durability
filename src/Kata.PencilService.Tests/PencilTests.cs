@@ -291,6 +291,53 @@ namespace Kata.PencilService.Tests
 
             Assert.Equal(initialDurability-expectedResult, pencil.Durability);
         }
+        
+        [Fact]
+        public void WhenWritingNothingItDoesNotThrowEx()
+        {
+            var pencil = new Pencil();
+            var paper = new Paper();
 
+            try
+            {
+                pencil.Write(string.Empty, ref paper);
+            }
+            catch
+            {
+                Assert.True(false, "Exception thrown when calling Write");
+            }
+        }
+
+        [Fact]
+        public void WhenErasingNothingItDoesNotThrowEx()
+        {
+            var pencil = new Pencil();
+            var paper = new Paper();
+
+            try
+            {
+                pencil.Erase(string.Empty, ref paper);
+            }
+            catch
+            {
+                Assert.True(false, "Exception thrown when calling Erase");
+            }
+        }
+
+        [Fact]
+        public void WhenRewritingNothingItDoesNotThrowEx()
+        {
+            var pencil = new Pencil();
+            var paper = new Paper();
+
+            try
+            {
+                pencil.Rewrite(string.Empty, ref paper);
+            }
+            catch
+            {
+                Assert.True(false, "Exception thrown when calling Rewrite");
+            }
+        }
     }
 }

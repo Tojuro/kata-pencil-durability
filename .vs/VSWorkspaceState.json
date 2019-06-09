@@ -1,8 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\src"
+    "\\src",
+    "\\src\\Kata.PencilService",
+    "\\src\\Kata.PencilService.Tests"
   ],
-  "SelectedNode": "\\src",
+  "SelectedNode": "\\src\\Kata.PencilService.Tests\\PencilTests.cs",
   "PreviewInSolutionExplorer": false
 }
